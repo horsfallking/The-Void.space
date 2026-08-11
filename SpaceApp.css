@@ -1,0 +1,238 @@
+:root {
+    --space-black: #020008;
+    --panel: rgba(23, 16, 43, 0.46);
+    --panel-hover: rgba(33, 16, 63, 0.58);
+    --purple-soft: #e4c1ff;
+    --teal: #77f2dc;
+    --teal-rgb: 119, 242, 220;
+    --gold: #ffd166;
+    --gold-rgb: 255, 209, 102;
+    --text: #f2ecff;
+    --button-text: #13091f;
+}
+
+body.pink-theme {
+    --space-black: #08020a;
+    --panel: rgba(54, 13, 43, 0.50);
+    --panel-hover: rgba(74, 18, 59, 0.62);
+    --purple-soft: #ff9ad5;
+    --teal: #9dffcb;
+    --teal-rgb: 157, 255, 203;
+    --gold: #f7ff8f;
+    --gold-rgb: 247, 255, 143;
+    --text: #fff0fa;
+    --button-text: #210616;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    background: var(--space-black);
+    color: var(--text);
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+#space-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.app-shell {
+    position: relative;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+}
+
+.command-panel {
+    position: relative;
+    width: min(520px, calc(100vw - 48px));
+    min-height: 310px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 34px 42px;
+    /* Transparent glass panel so the asteroid field remains visible behind it. */
+    background: var(--panel);
+    border: 1px solid var(--teal);
+    /* Rounded command-window edges for a softer futuristic panel. */
+    border-radius: 18px;
+    color: var(--text);
+    text-align: center;
+    overflow: visible;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow:
+        0 34px 70px rgba(0, 0, 0, 0.48),
+        0 0 34px rgba(var(--teal-rgb), 0.08),
+        inset 0 1px 0 rgba(242, 236, 255, 0.18),
+        inset 0 -22px 34px rgba(2, 0, 8, 0.24);
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0);
+    animation: panelFloat 9s ease-in-out infinite;
+    transition:
+        width 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+        min-height 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 1.15s ease,
+        border-color 1.15s ease,
+        box-shadow 1.15s ease;
+}
+
+.command-panel::before {
+    position: absolute;
+    z-index: -1;
+    inset: auto 10% -38px;
+    height: 46px;
+    content: "";
+    /* Soft shadow under the glass makes the panel read as floating above the asteroids. */
+    background: radial-gradient(ellipse at center, rgba(5, 2, 16, 0.72), rgba(5, 2, 16, 0));
+    filter: blur(10px);
+    opacity: 0.86;
+    transform: scaleX(0.9);
+    animation: panelShadow 9s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.command-panel::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    /* Subtle rim-light gives the hovering window a raised glass edge. */
+    border-radius: inherit;
+    background:
+        linear-gradient(135deg, rgba(242, 236, 255, 0.18), transparent 28%),
+        linear-gradient(315deg, rgba(var(--teal-rgb), 0.12), transparent 32%);
+    pointer-events: none;
+}
+
+.command-panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+.command-panel:hover {
+    width: min(538px, calc(100vw - 36px));
+    min-height: 322px;
+    background: var(--panel-hover);
+    border-color: var(--gold);
+    box-shadow:
+        0 44px 86px rgba(0, 0, 0, 0.54),
+        0 0 42px rgba(var(--teal-rgb), 0.13),
+        0 0 28px rgba(var(--gold-rgb), 0.10),
+        inset 0 1px 0 rgba(242, 236, 255, 0.22),
+        inset 0 -24px 38px rgba(2, 0, 8, 0.28);
+}
+
+.command-panel h1 {
+    margin: 0 0 5px;
+    color: var(--purple-soft);
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.status {
+    margin: 0;
+    color: var(--teal);
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.message {
+    margin: 35px 0 20px;
+    max-width: 34ch;
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+.engage-button,
+.theme-toggle {
+    border: 0;
+    background: var(--gold);
+    color: var(--button-text);
+    font: 700 0.95rem Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    transition:
+        background-color 1.15s ease,
+        border-color 1.15s ease,
+        color 1.15s ease,
+        transform 0.5s ease;
+}
+
+.engage-button {
+    border-radius: 12px;
+    padding: 10px 36px;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: 1px solid rgba(var(--teal-rgb), 0.45);
+    border-radius: 999px;
+    background: rgba(2, 0, 8, 0.30);
+    color: var(--teal);
+    font-size: 0.64rem;
+    letter-spacing: 0;
+    padding: 6px 10px;
+}
+
+.command-panel:hover .engage-button,
+.engage-button:hover,
+.theme-toggle:hover {
+    background: var(--teal);
+    color: var(--button-text);
+}
+
+.theme-toggle[aria-pressed="true"] {
+    background: var(--purple-soft);
+    border-color: var(--gold);
+    color: var(--button-text);
+}
+
+.engage-button:active,
+.theme-toggle:active {
+    transform: scale(0.96);
+}
+
+@keyframes panelFloat {
+    0%,
+    100% {
+        transform: translate3d(2px, -8px, 0);
+    }
+
+    50% {
+        transform: translate3d(-2px, 6px, 0);
+    }
+}
+
+@keyframes panelShadow {
+    0%,
+    100% {
+        opacity: 0.68;
+        transform: scaleX(0.82);
+    }
+
+    50% {
+        opacity: 0.96;
+        transform: scaleX(1);
+    }
+}
